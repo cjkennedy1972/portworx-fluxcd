@@ -1,0 +1,67 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+spec:
+  interval: 5m
+  chart:
+    spec:
+      version: 34.1.1
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+      interval: 1m
+  install:
+    crds: Create
+  upgrade:
+    crds: CreateReplace
+  values:
+    nameOverride: "promstack"
+    fullnameOverride: "promstack"
+    commonLabels:
+      install: gitops
+    defaultRules:
+      rules:
+        etcd: false
+    alertmanager:
+      enabled: false
+    grafana:
+      defaultDashboardTimezone: America/New_York
+      sidecar:
+        dashboards:
+          searchNamespace: ALL
+    kubeEtcd:
+      enabled: false
+    prometheus-operator:
+      admissionWebhooks:
+        certManager:
+          enabled: true
+          issuerRef:
+            name: "selfsigned-issuer"
+            kind: "ClusterIssuer"
+      namespaces:
+        releaseNamespace: true
+        additional:
+        - kube-system
+        - flux-system
+        - harbor
+    prometheus:
+      prometheusSpec:
+        enableFeatures:
+        - new-service-discovery-manager
+        - exemplar-storage
+        - memory-snapshot-on-shutdown
+        - extra-scrape-metrics
+        podMonitorSelector:
+          matchLabels:
+            app.kubernetes.io/part-of: flux
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: portworx-sc
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 50Gi

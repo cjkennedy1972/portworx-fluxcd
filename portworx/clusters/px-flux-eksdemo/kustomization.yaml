@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../storageclusters/
+
+commonAnnotations:
+  portworx.io/is-eks: "true"
+
+patchesStrategicMerge:
+- |-
+  kind: StorageCluster
+  apiVersion: core.libopenstorage.org/v1
+  metadata:
+    name: ck-homelab
+    namespace: kube-system
+  spec:
+    cloudStorage:
+      deviceSpecs:
+      - type=gp3,size=250
+      journalDeviceSpec: auto
+      kvdbDeviceSpec: type=gp3,size=100
+patches:
+- patch: |-
+    - op: remove
+      path: /spec/storage
+  target:
+    kind: StorageCluster
+    name: ck-homelab
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: px-cluster2
+  target:
+    kind: StorageCluster
+    name: ck-homelab
