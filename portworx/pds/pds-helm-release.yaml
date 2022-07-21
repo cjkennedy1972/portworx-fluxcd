@@ -1,0 +1,19 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: pds
+  namespace: pds-system
+spec:
+  interval: 1m0s
+  chart:
+    spec:
+      chart: pds-target
+      sourceRef:
+        kind: HelmRepository
+        name: pds
+        namespace: pds-system
+      version: 1.3.3 #set to your current pds version
+  values:
+        tenantId: "inserter your pds tennant id"
+        bearerToken: "insert pds bearer token"
+        apiEndpoint: https://your api endpoint for pds
