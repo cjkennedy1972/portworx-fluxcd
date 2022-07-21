@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: pds-system
+resources:
+  - pds-helm-release.yaml
+  - pds-helm-repo.yaml

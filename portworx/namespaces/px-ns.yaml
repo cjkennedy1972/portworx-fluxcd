@@ -1,0 +1,18 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: pds-system
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: portworx
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: pds-demo
+  labels:
+    pds.portworx.com/available: "true"
+
+     
